@@ -241,7 +241,13 @@ abstract class PHPUnit_Util_PHP
                     $stdout = substr($stdout, 19);
                 }
 
-                $childResult = unserialize(str_replace("#!/usr/bin/env php\n", '', $stdout));
+                // @todo find a proper fix for this
+                // Workaround, sometimes the response is not serialized data but xml
+                if (substr($stdout, 0, 5) === '<?xml') {
+                    $childResult = false;
+                } else {
+                    $childResult = unserialize(str_replace("#!/usr/bin/env php\n", '', $stdout));
+                }
                 restore_error_handler();
             } catch (ErrorException $e) {
                 restore_error_handler();
